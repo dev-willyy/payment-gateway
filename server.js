@@ -1,13 +1,13 @@
-import express from "express";
-import fs from "fs";
-import stripePackage from "stripe";
+import express from 'express';
+import fs from 'fs';
+import stripePackage from 'stripe';
 
 let stripePublicKey;
 let stripePrivateKey;
 
 async function loadEnvVariables() {
-  if (process.env.NODE_ENV !== "production") {
-    const dotenv = await import("dotenv");
+  if (process.env.NODE_ENV !== 'production') {
+    const dotenv = await import('dotenv');
     dotenv.default.config();
   }
 
@@ -25,16 +25,16 @@ async function startServer() {
   const stripe = stripePackage(stripePrivateKey);
 
   app.use(express.json());
-  app.use(express.static("public"));
+  app.use(express.static('public'));
 
-  app.set("view engine", "ejs");
+  app.set('view engine', 'ejs');
 
-  app.get("/store", (req, res) => {
-    fs.readFile("items.json", (error, data) => {
+  app.get('/store', (req, res) => {
+    fs.readFile('items.json', (error, data) => {
       if (error) {
         res.status(500).end;
       } else {
-        res.render("store.ejs", {
+        res.render('store.ejs', {
           items: JSON.parse(data),
           stripePublicKey: stripePublicKey,
         });
@@ -42,8 +42,8 @@ async function startServer() {
     });
   });
 
-  app.post("/purchase", (req, res) => {
-    fs.readFile("items.json", (error, data) => {
+  app.post('/purchase', (req, res) => {
+    fs.readFile('items.json', (error, data) => {
       if (error) {
         res.status(500).end;
       } else {
@@ -59,16 +59,16 @@ async function startServer() {
           .create({
             amount: total,
             source: req.body.stripeTokenId,
-            currency: "usd",
+            currency: 'usd',
           })
           .then(() => {
-            console.log("Charge successful");
+            console.log('Charge successful');
             res.json({
-              message: "Successfully purchased items",
+              message: 'Successfully purchased items',
             });
           })
           .catch(() => {
-            console.log("Charge failed");
+            console.log('Charge failed');
             res.status(500).end();
           });
       }
